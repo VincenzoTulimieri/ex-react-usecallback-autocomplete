@@ -1,21 +1,40 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
+
+// funzione di debounce
+function debounce(callback, delay){
+  let timer;
+  return (value)=>{
+    clearTimeout(timer);
+    timer= setTimeout(()=>{
+      callback(value);
+    },delay);
+  }
+}
 
 function App() {
   const [search, setSearch] = useState('')
   const [products, setProducts] = useState([])
 
-  useEffect(() => {
-    if(search.trim() === ''){
+  // funzione chiamata api
+  const fetchApi = (query) =>{
+    if(query.trim() === ''){
       setProducts([])
       return
     }
-    fetch(`http://localhost:3333/products?search=${search}`)
+    fetch(`http://localhost:3333/products?search=${query}`)
       .then(res => res.json())
       .then(data => setProducts(data))
       .catch(err => console.error(err))
-  }, [search])
+      console.log('api')
+  }
 
+  // useCallback per il debounce
+  const debounceApi = useCallback(debounce(fetchApi, 500),[])
+
+  useEffect(() => {
+    debounceApi(search)
+  }, [search])
 
 
   return (
@@ -32,7 +51,6 @@ function App() {
             })}
           </div>
         )}
-
       </div>
     </>
   )
