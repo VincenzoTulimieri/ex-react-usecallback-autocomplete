@@ -2,11 +2,13 @@ import { useState } from 'react'
 
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [search, setSearch] = useState([])
 
   return (
     <>
-      
+      <div className='container'>
+        <input type="text" value={search} onChange={e => setSearch(e.target.value)} />
+      </div>
     </>
   )
 }
